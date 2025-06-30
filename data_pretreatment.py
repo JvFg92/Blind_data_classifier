@@ -1,22 +1,53 @@
-import tensorflow as tf
+import pandas as pd
+from sklearn.model_selection import train_test_split
 
-def preprocess_image(image, label, image_size=(224, 224)):
+def import_data(file_path):
     """
-    Preprocess the input image and label.
+    Import data from a CSV file.
     
-    Args:
-        image: Input image tensor.
-        label: Corresponding label tensor.
-        image_size: Tuple specifying the target size for the image.
+    Parameters:
+    file_path (str): Path to the CSV file.
     
     Returns:
-        Preprocessed image and label tensors.
+    pd.DataFrame: DataFrame containing the imported data.
     """
-    # Resize the image to the target size
-    image = tf.image.resize(image, image_size)
-    
-    # Normalize the image to [0, 1] range
-    image = tf.cast(image, tf.float32) / 255.0
-    
-    return image, label
+    return pd.read_csv(file_path)
 
+def preprocess_data(df):
+    """
+    Preprocess the imported data.
+    
+    Parameters:
+    df (pd.DataFrame): DataFrame containing the imported data.
+    
+    Returns:
+    pd.DataFrame: DataFrame containing the preprocessed data.
+    """
+    # Handle missing values
+    df = df.dropna()
+
+    # Normalize numerical features
+    numerical_cols = df.select_dtypes(include=[np.number]).columns
+    df[numerical_cols] = (df[numerical_cols] - df[numerical_cols].mean()) / df[numerical_cols].std()
+
+    return df
+
+def split_data(df, target_column, test_size=0.2, random_state=42):
+    """
+    Split the data into training and testing sets.
+    
+    Parameters:
+    df (pd.DataFrame): DataFrame containing the preprocessed data.
+    target_column (str): Name of the target column.
+    test_size (float): Proportion of the dataset to include in the test split.
+    random_state (int): Random seed for reproducibility.
+    
+    Returns:
+    tuple: Training and testing sets (X_train, X_test, y_train, y_test).
+    """
+    X = df.drop(columns=[target_column])
+    y = df[target_column]
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+    
+    return X_train, X_test, y_train, y_test
