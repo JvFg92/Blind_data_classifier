@@ -217,5 +217,5 @@ def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação
         print("\nNo suitable database found for classification based on the criteria.")
         return None
     
-     
-
+#if __name__ == "__main__": 
+#    find_best(plot_results=True)
