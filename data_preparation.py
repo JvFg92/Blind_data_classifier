@@ -10,7 +10,7 @@ def import_data(file_path=None):
     return pd.DataFrame()
 
 def preprocess_data(df):
-    # Basic preprocessing steps
+    #Basic preprocessing steps
     df = df.dropna()
     df = df.drop_duplicates()
     return df

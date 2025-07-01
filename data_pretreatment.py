@@ -22,8 +22,6 @@ are:
     - Feature Relevance: Features should have predictive power for the target column.
 """
 
-data_folder = '/home/jvfg/Documents/SI/Algoritmos de Classificação/bases'
-
 def import_data(file_path):
     return pd.read_csv(file_path, header=None)
 
@@ -58,7 +56,7 @@ def preprocess_data(df):
 
     return df_processed
 
-def find_best():
+def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação/bases', plot_results=False):
     """
     Main function to find the best database for classification.
     """
@@ -172,48 +170,52 @@ def find_best():
         best_df_preprocessed = best_db_info['preprocessed_df']
         best_target_column_index = best_db_info['target_column_index']
 
-        # --- Plot 1: Class Distribution ---
-        plt.figure(figsize=(10, 6))
-        sns.countplot(x=best_df_preprocessed[best_target_column_index], order=best_df_preprocessed[best_target_column_index].value_counts().index)
-        plt.title(f'Class Distribution for Best Database: {os.path.basename(best_database)}')
-        plt.xlabel('Class')
-        plt.ylabel('Count')
-        plt.xticks(rotation=45, ha='right')
-        plt.tight_layout()
-        plt.show()
+        if plot_results:
+            # --- Plot 1: Class Distribution ---
+            plt.figure(figsize=(10, 6))
+            sns.countplot(x=best_df_preprocessed[best_target_column_index], order=best_df_preprocessed[best_target_column_index].value_counts().index)
+            plt.title(f'Class Distribution for Best Database: {os.path.basename(best_database)}')
+            plt.xlabel('Class')
+            plt.ylabel('Count')
+            plt.xticks(rotation=45, ha='right')
+            plt.tight_layout()
+            plt.show()
 
-        """
-        # --- Plot 2: Box Plots for Numerical Features (Paginated) ---
-        numerical_features = best_df_preprocessed.select_dtypes(include=[np.number]).columns.tolist()
-        if best_target_column_index in numerical_features:
-            numerical_features.remove(best_target_column_index)
+            """
+            # --- Plot 2: Box Plots for Numerical Features (Paginated) ---
+            numerical_features = best_df_preprocessed.select_dtypes(include=[np.number]).columns.tolist()
+            if best_target_column_index in numerical_features:
+                numerical_features.remove(best_target_column_index)
 
-        if numerical_features:
-            features_per_page = 9 
-            n_cols = 3
+            if numerical_features:
+                features_per_page = 9 
+                n_cols = 3
+                
+                for i in range(0, len(numerical_features), features_per_page):
+                    current_features_to_plot = numerical_features[i:i + features_per_page]
+                    n_current_features = len(current_features_to_plot)
+                    n_rows = (n_current_features + n_cols - 1) // n_cols
+
+                    plt.figure(figsize=(n_cols * 5, n_rows * 4)) 
+                    plt.suptitle(f'Box Plots of Numerical Features ({i+1}-{i+n_current_features}) for {os.path.basename(best_database)}', y=1.02) # Main title for the page
+
+                    for j, col in enumerate(current_features_to_plot):
+                        plt.subplot(n_rows, n_cols, j + 1)
+                        sns.boxplot(y=best_df_preprocessed[col]) 
+                        plt.title(f'Feature: {col}')
+                        plt.ylabel(col) 
+                        plt.xlabel('') 
+                    plt.tight_layout(rect=[0, 0.03, 1, 0.98]) 
+                    plt.show()
             
-            for i in range(0, len(numerical_features), features_per_page):
-                current_features_to_plot = numerical_features[i:i + features_per_page]
-                n_current_features = len(current_features_to_plot)
-                n_rows = (n_current_features + n_cols - 1) // n_cols
-
-                plt.figure(figsize=(n_cols * 5, n_rows * 4)) 
-                plt.suptitle(f'Box Plots of Numerical Features ({i+1}-{i+n_current_features}) for {os.path.basename(best_database)}', y=1.02) # Main title for the page
-
-                for j, col in enumerate(current_features_to_plot):
-                    plt.subplot(n_rows, n_cols, j + 1)
-                    sns.boxplot(y=best_df_preprocessed[col]) 
-                    plt.title(f'Feature: {col}')
-                    plt.ylabel(col) 
-                    plt.xlabel('') 
-                plt.tight_layout(rect=[0, 0.03, 1, 0.98]) 
-                plt.show()
-        
-        else:
-            print(f"No numerical features (excluding target) found in {os.path.basename(best_database)} for plotting box plots.")
-        """
+            else:
+                print(f"No numerical features (excluding target) found in {os.path.basename(best_database)} for plotting box plots.")
+            """
+        #Return the path to the best database for further processing
+        return best_database
     else:
         print("\nNo suitable database found for classification based on the criteria.")
+        return None
+    
+     
 
-#if __name__ == "__main__":
-#    find_best()
