@@ -31,20 +31,20 @@ def preprocess_data(df):
     """
     df_processed = df.copy()
 
-    # Handle missing values
+    #Handle missing values
     df_processed = df_processed.dropna()
 
-    # Handle duplicates: Remove duplicate rows
+    #Handle duplicates: Remove duplicate rows
     initial_rows = df_processed.shape[0]
     df_processed.drop_duplicates(inplace=True)
     if df_processed.shape[0] < initial_rows:
         print(f"  Removed {initial_rows - df_processed.shape[0]} duplicate rows.")
 
-    # Normalize numerical features
+    #Normalize numerical features
     numerical_cols = df_processed.select_dtypes(include=[np.number]).columns
     if not numerical_cols.empty:
         std_dev = df_processed[numerical_cols].std()
-        # Avoid division by zero in case std_dev is zero
+        #Avoid division by zero in case std_dev is zero
         std_dev = std_dev.replace(0, 1)
         df_processed[numerical_cols] = (df_processed[numerical_cols] - df_processed[numerical_cols].mean()) / std_dev
 
@@ -82,3 +82,10 @@ def rfe_selection(X, y, n_features_to_select=10):
     
     selected_features = X.columns[rfe.support_].tolist()
     return selected_features
+
+def process_data(file_path=None):
+    df = import_data(file_path)
+    df = preprocess_data(df)
+    features = rfe_selection(df.drop(columns=df.columns[-1]), df[df.columns[-1]], n_features_to_select=10)
+    df = df[features + [df.columns[-1]]]  #Keep only selected features
+    return split_data(df, target_column=df.columns[-1])
