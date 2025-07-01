@@ -1,4 +1,4 @@
-import classify as cs
+import mlp
 
 if __name__ == "__main__":
-  print("Hello World!")
+  mlp.train_model()

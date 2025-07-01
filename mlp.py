@@ -1,6 +1,5 @@
-import data_pretreatment as dp
+import data_preparation as dp
 import tensorflow as tf
-import numpy as np
 
 class mlp_classifier:
   def __init__(self, input_shape, num_classes, file_path=None):
