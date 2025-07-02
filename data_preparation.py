@@ -19,7 +19,7 @@ def import_data(file_path=None):
     if file_path:
         return pd.read_csv(file_path, header=None)
     else: 
-        file_path = '/Blind_data_classifier/bases/05.csv'
+        file_path = 'Blind_data_classifier/bases/05.csv'
         return pd.read_csv(file_path, header=None)
 
 ##########################################
@@ -103,7 +103,7 @@ def save_processed_data(df):
     Parameters:
     df (DataFrame): The DataFrame to save.
     """
-    output_path = '/Blind_data_classifier/processed_data.csv'
+    output_path = 'Blind_data_classifier/processed_data.csv'
     df.to_csv(output_path, index=False)
     print(f"Processed data saved to {output_path}")
 
