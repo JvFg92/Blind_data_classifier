@@ -40,13 +40,19 @@ def preprocess_data(df):
     if df_processed.shape[0] < initial_rows:
         print(f"  Removed {initial_rows - df_processed.shape[0]} duplicate rows.")
 
-    #Normalize numerical features
-    numerical_cols = df_processed.select_dtypes(include=[np.number]).columns
-    if not numerical_cols.empty:
-        std_dev = df_processed[numerical_cols].std()
+    # IDENTIFICAR E SEPARAR A COLUNA ALVO TEMPORARIAMENTE ANTES DA NORMALIZAÇÃO
+    # Assumindo que a última coluna é sempre a coluna alvo.
+    # Se não for, você precisará de uma forma mais robusta de identificá-la.
+    target_column_name = df_processed.columns[-1]
+    
+    # Selecionar apenas as colunas numéricas que NÃO são o target para normalização
+    numerical_features_cols = df_processed.drop(columns=[target_column_name]).select_dtypes(include=[np.number]).columns
+    
+    if not numerical_features_cols.empty:
+        std_dev = df_processed[numerical_features_cols].std()
         #Avoid division by zero in case std_dev is zero
         std_dev = std_dev.replace(0, 1)
-        df_processed[numerical_cols] = (df_processed[numerical_cols] - df_processed[numerical_cols].mean()) / std_dev
+        df_processed[numerical_features_cols] = (df_processed[numerical_features_cols] - df_processed[numerical_features_cols].mean()) / std_dev
 
     return df_processed
 
@@ -89,3 +95,11 @@ def process_data(file_path=None):
     features = rfe_selection(df.drop(columns=df.columns[-1]), df[df.columns[-1]], n_features_to_select=10)
     df = df[features + [df.columns[-1]]]  #Keep only selected features
     return split_data(df, target_column=df.columns[-1])
+
+
+if __name__ == "__main__":
+    print("Starting data preparation...")
+    xtrain, xtest, ytrain, ytest = process_data()
+    print("Training and testing data prepared successfully.")
+    print(f"Training set size: {xtrain.shape[0]}, Testing set size: {xtest.shape[0]}")
+    print(f"Selected features: {xtrain.columns.tolist()}")
