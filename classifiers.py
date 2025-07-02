@@ -1,8 +1,10 @@
 import sklearn
 from sklearn.neural_network import MLPClassifier
-import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.base import clone
+import plot as plt
+import time
 
+##########################################
 def random_forest(X, y):
     """
     Train a Random Forest classifier.
@@ -12,10 +14,15 @@ def random_forest(X, y):
     Returns:
     clf (RandomForestClassifier): Trained Random Forest classifier.
     """
+    print("\n---Train Random Forest Classifier---")
+    start = time.time()
     clf = sklearn.ensemble.RandomForestClassifier()
     clf.fit(X, y)
+    end = time.time()
+    print(f"Random Forest training completed in {end - start:.2f} seconds.\n")
     return clf
 
+##########################################
 def knn(X, y):
     """
     Train a K-Nearest Neighbors classifier.
@@ -25,11 +32,16 @@ def knn(X, y):
     Returns:
     clf (KNeighborsClassifier): Trained K-Nearest Neighbors classifier.
     """
+    print("\n---Train K-Nearest Neighbors Classifier---")
+    start = time.time()
     clf = sklearn.neighbors.KNeighborsClassifier()
     clf.fit(X, y)
+    end = time.time()
+    print(f"KNN training completed in {end - start:.2f} seconds.\n")
     return clf 
 
-def neural_network(X, y, hidden_layer_sizes=(100,), max_iter=200):
+##########################################
+def neural_network(X, y, hidden_layer_sizes=(15,15), max_iter=1500, random_state=42):
     """
     Train a Multi-layer Perceptron classifier.
     Parameters:
@@ -40,45 +52,42 @@ def neural_network(X, y, hidden_layer_sizes=(100,), max_iter=200):
     Returns:
     clf (MLPClassifier): Trained Multi-layer Perceptron classifier.
     """
-    clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter)
+    print("\n---Train Multi-layer Perceptron Classifier---")
+    inicio = time.time()
+    clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter, random_state=random_state)
     clf.fit(X, y)
+    fim = time.time()
+    print(f"Neural network training completed in {fim - inicio:.2f} seconds.\n")
     return clf
 
-def plot_decision_boundary(X, y, model, title='Decision Boundary'):
-    """
-    Plot the decision boundary of a classifier.
+##########################################
+def evaluate_classifier(clf, X_test, y_test, name='Classifier', plot=False):
     
-    Parameters:
-    X (DataFrame): Feature matrix.
-    y (Series): Target variable.
-    model: Trained classifier.
-    title (str): Title of the plot.
-    """
-    plt.figure(figsize=(10, 6))
-    x_min, x_max = X.iloc[:, 0].min() - 1, X.iloc[:, 0].max() + 1
-    y_min, y_max = X.iloc[:, 1].min() - 1, X.iloc[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
-                         np.arange(y_min, y_max, 0.01))
-    
-    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
-    Z = Z.reshape(xx.shape)
-    
-    plt.contourf(xx, yy, Z, alpha=0.8)
-    plt.scatter(X.iloc[:, 0], X.iloc[:, 1], c=y, edgecolors='k', marker='o')
-    plt.title(title)
-    plt.xlabel(X.columns[0])
-    plt.ylabel(X.columns[1])
-    plt.show()
-
-def evaluate_classifier(clf, X_test, y_test):
     """
     Evaluate the classifier on the test set.
     Parameters:
     clf (classifier): Trained classifier.
     X_test (array-like): Test feature matrix.
     y_test (array-like): True labels for the test set.
-    Returns:
-    accuracy (float): Accuracy of the classifier on the test set.
+    Shows confusion matrix, classification report, accuracy, F1 score, precision, and recall.
     """
+    print(f"\n---Evaluate {name}---")
     y_pred = clf.predict(X_test)
-    return sklearn.metrics.accuracy_score(y_test, y_pred)
+    print("\nConfusion Matrix:\n", sklearn.metrics.confusion_matrix(y_test, y_pred))
+    print("\nClassification Report:\n", sklearn.metrics.classification_report(y_test, y_pred))
+    print("\nAccuracy Score:", sklearn.metrics.accuracy_score(y_test, y_pred))
+    print("\nF1 Score:", sklearn.metrics.f1_score(y_test, y_pred, average='weighted'))
+    print("\nPrecision Score:", sklearn.metrics.precision_score(y_test, y_pred, average='weighted'))
+    print("\nRecall Score:", sklearn.metrics.recall_score(y_test, y_pred, average='weighted'))
+
+    if plot:
+        if X_test.shape[1] >= 2:
+            X_test_2d = X_test.iloc[:, :2]
+            temp_clf = clone(clf) # Create a new instance of the same type of classifier
+            temp_clf.fit(X_test_2d, y_test) # Train it on the 2D data
+            
+            plt.plot_decision_boundary(temp_clf, X_test_2d, y_test, title=f'{name} Decision Boundary')
+        else:
+            print("Skipping decision boundary plot: Not enough features (less than 2) in X_test.")
+            
+        #plt.plot_classifier_results(y_test, y_pred, title=f'{name} Results')

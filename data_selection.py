@@ -22,9 +22,11 @@ are:
     - Feature Relevance: Features should have predictive power for the target column.
 """
 
+##########################################
 def import_data(file_path):
     return pd.read_csv(file_path, header=None)
 
+##########################################
 def preprocess_data(df):
     """
     Preprocess the imported data.
@@ -56,10 +58,12 @@ def preprocess_data(df):
 
     return df_processed
 
-def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação/Codes/bases/05.csv', plot_results=False):
+##########################################
+def find_best(data_folder='Blind_data_classifier/bases', plot_results=False):
     """
     Main function to find the best database for classification.
     """
+    print("Starting database selection process...\n")
     if not os.path.exists(data_folder):
         print(f"Error: The '{data_folder}' folder was not found.")
         print("Please create a folder named 'bases' and place your CSV files inside it.")
@@ -85,7 +89,7 @@ def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação
             df_current_processed = df_original_loaded.copy()
             target_column_index = df_current_processed.columns[-1]
 
-            # Verify if the target column index is the target column
+            #Verify if the target column index is the target column
             if id_column_index in df_current_processed.columns and id_column_index != target_column_index:
                 df_current_processed = df_current_processed.drop(columns=[id_column_index]).copy()
                 print(f"  Column ID ({id_column_index}) removed.")
@@ -110,13 +114,13 @@ def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação
             num_unique_classes = len(np.unique(target_values))
             class_distribution = Counter(target_values)
 
-            # Calculate class balance metric (e.g., standard deviation of class counts)
+            #Calculate class balance metric (e.g., standard deviation of class counts)
             class_counts = np.array(list(class_distribution.values()))
             class_balance_std = np.std(class_counts)
 
             is_suitable_for_classification = num_unique_classes > 1 and preprocessed_rows > 50
 
-            # Check for consistency (basic check: identify non-numeric values in numeric columns)
+            #Check for consistency (basic check: identify non-numeric values in numeric columns)
             inconsistent_data_found = False
             for col in df_preprocessed.columns:
                 if df_preprocessed[col].dtype == 'object':
@@ -153,7 +157,7 @@ def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação
         print(f"  Has Duplicates Removed: {info['has_duplicates']}")
         print(f"  Suitable for Classification: {info['is_suitable_for_classification']}")
 
-    # Choose the "best" database
+    #Choose the "best" database
     best_database = None
     max_preprocessed_rows = -1
 
@@ -171,7 +175,7 @@ def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação
         best_target_column_index = best_db_info['target_column_index']
 
         if plot_results:
-            # --- Plot 1: Class Distribution ---
+            # --- Plot Class Distribution ---
             plt.figure(figsize=(10, 6))
             sns.countplot(x=best_df_preprocessed[best_target_column_index], order=best_df_preprocessed[best_target_column_index].value_counts().index)
             plt.title(f'Class Distribution for Best Database: {os.path.basename(best_database)}')
@@ -181,41 +185,12 @@ def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação
             plt.tight_layout()
             plt.show()
 
-            """
-            # --- Plot 2: Box Plots for Numerical Features (Paginated) ---
-            numerical_features = best_df_preprocessed.select_dtypes(include=[np.number]).columns.tolist()
-            if best_target_column_index in numerical_features:
-                numerical_features.remove(best_target_column_index)
-
-            if numerical_features:
-                features_per_page = 9 
-                n_cols = 3
-                
-                for i in range(0, len(numerical_features), features_per_page):
-                    current_features_to_plot = numerical_features[i:i + features_per_page]
-                    n_current_features = len(current_features_to_plot)
-                    n_rows = (n_current_features + n_cols - 1) // n_cols
-
-                    plt.figure(figsize=(n_cols * 5, n_rows * 4)) 
-                    plt.suptitle(f'Box Plots of Numerical Features ({i+1}-{i+n_current_features}) for {os.path.basename(best_database)}', y=1.02) # Main title for the page
-
-                    for j, col in enumerate(current_features_to_plot):
-                        plt.subplot(n_rows, n_cols, j + 1)
-                        sns.boxplot(y=best_df_preprocessed[col]) 
-                        plt.title(f'Feature: {col}')
-                        plt.ylabel(col) 
-                        plt.xlabel('') 
-                    plt.tight_layout(rect=[0, 0.03, 1, 0.98]) 
-                    plt.show()
-            
-            else:
-                print(f"No numerical features (excluding target) found in {os.path.basename(best_database)} for plotting box plots.")
-            """
         #Return the path to the best database for further processing
         return best_database
     else:
         print("\nNo suitable database found for classification based on the criteria.")
         return None
-    
+
+##########################################  
 #if __name__ == "__main__": 
 #    find_best(plot_results=True)
