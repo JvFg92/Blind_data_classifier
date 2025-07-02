@@ -26,7 +26,7 @@ cd Classify
 python3 -m venv venv
 ```
 
-###  2. Activate the Virtual Environment:
+### 🌎 2. Activate the Virtual Environment:
 **On Linux 🐧:**
 ```bash
 source venv/bin/activate
@@ -50,8 +50,6 @@ git clone https://github.com/JvFg92/Blind_data_classifier
 ```
 
 ### 5. Running the scripts: ▶️
-**Generator:**
-⚠️ **Open a Terminal** ⚠️
 
 **On Linux 🐧:**
 ```bash
@@ -89,8 +87,8 @@ python main.py
 ```
 
 
-### 6. When you're finished, you can deactivate the environment with a single command:
-⚠️ **Do it for each terminal** ⚠️
+### ⚠️ 6. When you're finished, you can deactivate the environment with a single command: ⚠
+
 ```bash
 deactivate
 ```
