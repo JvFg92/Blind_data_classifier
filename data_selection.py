@@ -59,7 +59,7 @@ def preprocess_data(df):
     return df_processed
 
 ##########################################
-def find_best(data_folder='Blind_data_classifier/bases', plot_results=False):
+def find_best(data_folder='/Blind_data_classifier/bases', plot_results=False):
     """
     Main function to find the best database for classification.
     """

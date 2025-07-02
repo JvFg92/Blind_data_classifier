@@ -7,7 +7,7 @@ if __name__ == "__main__":
   xtrain, xtest, ytrain, ytest = dp.process_data(file_path = 'Blind_data_classifier/bases', plot=True, save=True, first_execution=True, n_features_to_select=100)
 
   """Second Execution:"""
-  #df=dp.import_data('Blind_data_classifier/processed_data.csv') 
+  #df=dp.import_data('/Blind_data_classifier/processed_data.csv') 
   #xtrain, xtest, ytrain, ytest=dp.split_data(df, target_column=df.columns[-1])
   #dp.plot_train_test_data(xtrain, ytrain, xtest, ytest, title='Train and Test Data Distribution')
 
