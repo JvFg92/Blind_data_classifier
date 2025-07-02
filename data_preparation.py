@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 import numpy as np
+import matplotlib.pyplot as plt
+import time
 
 def import_data(file_path=None):
     """Import data from a CSV file.
@@ -15,7 +17,7 @@ def import_data(file_path=None):
     if file_path:
         return pd.read_csv(file_path, header=None)
     else: 
-        file_path = '/home/jvfg/Documents/SI/Algoritmos de Classificação/bases/05.csv'
+        file_path = '/home/jvfg/Documents/SI/Algoritmos de Classificação/Codes/bases/05.csv'
         return pd.read_csv(file_path, header=None)
 
 
@@ -89,17 +91,75 @@ def rfe_selection(X, y, n_features_to_select=10):
     selected_features = X.columns[rfe.support_].tolist()
     return selected_features
 
-def process_data(file_path=None):
+def plot_data_distribution(df, target_column):
+    """
+    Plot the distribution of the target variable.
+    
+    Parameters:
+    df (DataFrame): The input DataFrame containing features and target.
+    target_column (str): The name of the target column in the DataFrame.
+    """
+    plt.figure(figsize=(10, 6))
+    df[target_column].value_counts().plot(kind='bar')
+    plt.title(f'Distribution of {target_column}')
+    plt.xlabel(target_column)
+    plt.ylabel('Frequency')
+    plt.show()
+
+def plot_features_selection(df, selected_features):
+    """
+    Plot the selected features from the DataFrame.
+    
+    Parameters:
+    df (DataFrame): The input DataFrame containing features and target.
+    selected_features (list): List of selected feature names.
+    """
+    plt.figure(figsize=(10, 6))
+    for feature in selected_features:
+        plt.hist(df[feature], bins=30, alpha=0.5, label=feature)
+    plt.title('Selected Features Distribution')
+    plt.xlabel('Feature Value')
+    plt.ylabel('Frequency')
+    plt.legend()
+    plt.show()
+
+def plot_data_selection(X, y):
+    """
+    Plot the selected features from the DataFrame.
+    
+    Parameters:
+    X (DataFrame): The input DataFrame containing features.
+    y (Series): The target variable.
+    """
+    plt.figure(figsize=(10, 6))
+    for column in X.columns:
+        plt.hist(X[column], bins=30, alpha=0.5, label=column)
+    plt.title('Selected Data Distribution')
+    plt.xlabel('Feature Value')
+    plt.ylabel('Frequency')
+    plt.legend()
+    plt.show()
+
+def process_data(file_path=None, plot=False):
+    inicio = time.time()
     df = import_data(file_path)
     df = preprocess_data(df)
     features = rfe_selection(df.drop(columns=df.columns[-1]), df[df.columns[-1]], n_features_to_select=10)
     df = df[features + [df.columns[-1]]]  #Keep only selected features
-    return split_data(df, target_column=df.columns[-1])
-
+    fim = time.time()
+    print(f"Data processing completed in {fim - inicio:.2f} seconds.")
+    xtrain, xtest, ytrain, ytest = split_data(df, target_column=df.columns[-1])
+    if plot:
+        plot_data_distribution(df, target_column=df.columns[-1])
+        plot_features_selection(df, features)
+        plot_data_selection(xtrain, ytrain)
+    return (xtrain, xtest, ytrain, ytest)
 
 if __name__ == "__main__":
     print("Starting data preparation...")
-    xtrain, xtest, ytrain, ytest = process_data()
+    xtrain, xtest, ytrain, ytest = process_data(plot=True)
     print("Training and testing data prepared successfully.")
+    plot_data_selection(xtrain, ytrain)
+    plot_data_selection(xtest, ytest)
     print(f"Training set size: {xtrain.shape[0]}, Testing set size: {xtest.shape[0]}")
     print(f"Selected features: {xtrain.columns.tolist()}")

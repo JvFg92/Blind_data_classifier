@@ -1,5 +1,7 @@
 import sklearn
 from sklearn.neural_network import MLPClassifier
+import numpy as np
+import matplotlib.pyplot as plt
 
 def random_forest(X, y):
     """
@@ -41,6 +43,32 @@ def neural_network(X, y, hidden_layer_sizes=(100,), max_iter=200):
     clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter)
     clf.fit(X, y)
     return clf
+
+def plot_decision_boundary(X, y, model, title='Decision Boundary'):
+    """
+    Plot the decision boundary of a classifier.
+    
+    Parameters:
+    X (DataFrame): Feature matrix.
+    y (Series): Target variable.
+    model: Trained classifier.
+    title (str): Title of the plot.
+    """
+    plt.figure(figsize=(10, 6))
+    x_min, x_max = X.iloc[:, 0].min() - 1, X.iloc[:, 0].max() + 1
+    y_min, y_max = X.iloc[:, 1].min() - 1, X.iloc[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
+                         np.arange(y_min, y_max, 0.01))
+    
+    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    
+    plt.contourf(xx, yy, Z, alpha=0.8)
+    plt.scatter(X.iloc[:, 0], X.iloc[:, 1], c=y, edgecolors='k', marker='o')
+    plt.title(title)
+    plt.xlabel(X.columns[0])
+    plt.ylabel(X.columns[1])
+    plt.show()
 
 def evaluate_classifier(clf, X_test, y_test):
     """

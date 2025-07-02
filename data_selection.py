@@ -56,7 +56,7 @@ def preprocess_data(df):
 
     return df_processed
 
-def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação/bases', plot_results=False):
+def find_best(data_folder='/home/jvfg/Documents/SI/Algoritmos de Classificação/Codes/bases/05.csv', plot_results=False):
     """
     Main function to find the best database for classification.
     """
