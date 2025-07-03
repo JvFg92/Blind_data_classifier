@@ -8,6 +8,7 @@ This project provides a robust framework for classifying blind datasets, offerin
 * **Comprehensive Data Preprocessing**: Handles missing values, removes duplicate rows, and normalizes numerical features to ensure data quality.
 * **Recursive Feature Elimination (RFE)**: Employs RFE with Logistic Regression to select the most relevant features, reducing dimensionality and improving model performance.
 * **Flexible Data Splitting**: Splits data into training and testing sets for model development and evaluation.
+* **Hyperparameter Tuning with GridSearchCV**: Utilizes the `train_and_tune_classifier` function to optimize classifier performance by performing a grid search over specified hyperparameters, using StratifiedKFold cross-validation and weighted F1 score to handle class imbalance effectively.
 * **Multiple Classifiers**: Implements and evaluates popular classification algorithms:
     * K-Nearest Neighbors (KNN) 🏘️
     * Random Forest 🌳
