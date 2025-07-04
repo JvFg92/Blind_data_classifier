@@ -83,7 +83,7 @@ source venv/bin/activate
 ```
 *You will know it's active because (venv) will appear at the beginning of your terminal prompt.*
 
-### 3. Install Spade:
+### 3. Install Libraries:
 ```bash
 pip install pandas numpy scikit-learn matplotlib seaborn 
 ```
